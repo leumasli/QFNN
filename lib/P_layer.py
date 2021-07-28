@@ -1,7 +1,7 @@
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from qiskit.extensions import UnitaryGate
 
-from utils import *
+from lib.utils import *
 
 
 def neg_weight_gate(circ, qubits, aux, state):

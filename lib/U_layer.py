@@ -2,7 +2,7 @@ import math
 import numpy as np
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from qiskit.extensions import UnitaryGate
-from utils import *
+from lib.utils import *
 
 
 def get_index_list(input, target):

@@ -156,4 +156,4 @@ dfu = pd.DataFrame(u_prob, columns=["u[0]", "u[1]"])
 dfp = pd.DataFrame(p_prob, columns=["p[0]", "p[1]"])
 
 df_prob = pd.concat([dfp, dfu], axis=1)
-df_prob.to_csv('./results/test.csv', index=False)
+df_prob.to_csv('./results/probabilities.csv', index=False)
