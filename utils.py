@@ -75,7 +75,7 @@ def ToQuantumMatrix(tensor):
     return output_matrix
 
 
-def data_pre_pro(img, img_size):
+def data_pre_pro(img, img_size, drawing=False, verbose=True):
     """
     T1: Downsample the image from 28*28 to 4*4
     T2: Convert classical data to quantum data which
@@ -85,23 +85,27 @@ def data_pre_pro(img, img_size):
     # Print original figure
     img = img
     npimg = img.numpy()
-    plt.imshow(np.transpose(npimg, (1, 2, 0)))
-    plt.show()
+    if drawing:
+        plt.imshow(np.transpose(npimg, (1, 2, 0)))
+        plt.show()
     # Print resized figure
     image = np.asarray(npimg[0] * 255, np.uint8)
     im = Image.fromarray(image, mode="L")
     im = im.resize((4, 4), Image.BILINEAR)
-    plt.imshow(im, cmap='gray',)
-    plt.show()
+    if drawing:
+        plt.imshow(im, cmap='gray',)
+        plt.show()
     # Converting classical data to quantum data
     trans_to_tensor = transforms.ToTensor()
-    print("Classical Data: {}".format(trans_to_tensor(im).flatten()))
-    print("Quantum Data: {}".format(ToQuantumData(
-        trans_to_tensor(im), img_size).flatten()))
+    if verbose:
+        print("Classical Data: {}".format(trans_to_tensor(im).flatten()))
+        print("Quantum Data: {}".format(ToQuantumData(
+            trans_to_tensor(im), img_size).flatten()))
+
     return ToQuantumMatrix(trans_to_tensor(im)), ToQuantumData(trans_to_tensor(im), img_size)
 
 
-def fire_ibmq(circuit, shots, Simulation=False, backend_name='ibmq_qasm_simulator'):
+def fire_ibmq(circuit, shots, Simulation=False, backend_name='ibmq_qasm_simulator', quiet=False):
     """
     Function: fire_ibmq from Listing 6
     Note: used for execute quantum circuit using
@@ -119,7 +123,7 @@ def fire_ibmq(circuit, shots, Simulation=False, backend_name='ibmq_qasm_simulato
     else:
         backend = Aer.get_backend('qasm_simulator')
     job_ibm_q = execute(circuit, backend, shots=shots)
-    job_monitor(job_ibm_q)
+    job_monitor(job_ibm_q, quiet=quiet)
     result_ibm_q = job_ibm_q.result()
     counts = result_ibm_q.get_counts()
     return counts
@@ -205,6 +209,3 @@ def ccccx(circ, q1, q2, q3, q4, t, aux1, aux2):
     circ.ccx(q3, q4, aux2)
     circ.ccx(q1, q2, aux1)
     return circ
-
-
-

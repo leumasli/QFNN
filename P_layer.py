@@ -1,5 +1,6 @@
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from qiskit.extensions import UnitaryGate
+
 from utils import *
 
 
@@ -34,6 +35,11 @@ def neg_weight_gate(circ, qubits, aux, state):
 
 
 def p_circ_gen(quantum_matrix, weights, flags, params):
+
+    # Quantum circuit implementation of the output layer
+    # fundamentals, please see our Nature Communication
+    # paper (P-LYR) https://arxiv.org/pdf/2006.14815.pdf
+
     """
     weights = [weight_1_1, weight_1_2, weight_2_1, weight_2_2]
     flags = [norm_flag_1, norm_flag_2]
