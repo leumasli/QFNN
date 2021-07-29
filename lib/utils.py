@@ -105,7 +105,7 @@ def data_pre_pro(img, img_size, drawing=False, verbose=True):
     return ToQuantumMatrix(trans_to_tensor(im)), ToQuantumData(trans_to_tensor(im), img_size)
 
 
-def fire_ibmq(circuit, shots, Simulation=False, backend_name='ibmq_qasm_simulator', quiet=False):
+def fire_ibmq(circuit, shots, Simulation=False, backend_name='ibmq_casablanca', quiet=True):
     """
     Function: fire_ibmq from Listing 6
     Note: used for execute quantum circuit using
