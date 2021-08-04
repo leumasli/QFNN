@@ -105,10 +105,10 @@ def data_pre_pro(img, img_size, drawing=False, verbose=True):
     return ToQuantumMatrix(trans_to_tensor(im)), ToQuantumData(trans_to_tensor(im), img_size)
 
 
-def fire_ibmq(circuit, shots, Simulation=False, backend_name='ibmq_casablanca', quiet=True):
+def fire_ibmq(circuit, shots, Simulation=False, backend_name='ibmq_casablanca'):
     """
     Function: fire_ibmq from Listing 6
-    Note: used for execute quantum circuit using
+    Note: used for execute quantum circuit usingd
           simulation or ibm quantum processor
     Parameters: (1) quantum circuit;
                 (2) number of shots;
@@ -123,7 +123,7 @@ def fire_ibmq(circuit, shots, Simulation=False, backend_name='ibmq_casablanca', 
     else:
         backend = Aer.get_backend('qasm_simulator')
     job_ibm_q = execute(circuit, backend, shots=shots)
-    job_monitor(job_ibm_q, quiet=quiet)
+    job_monitor(job_ibm_q, quiet=True)
     result_ibm_q = job_ibm_q.result()
     counts = result_ibm_q.get_counts()
     return counts

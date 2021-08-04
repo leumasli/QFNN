@@ -26,7 +26,7 @@ interest_num = [3,6]
 ori_img_size = 28
 img_size = 4
 # number of subprocesses to use for data loading
-num_workers = 0
+num_workers = 12
 # how many samples per batch to load
 batch_size = 1
 inference_batch_size = 1

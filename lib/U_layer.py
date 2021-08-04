@@ -159,7 +159,7 @@ def qf_map_extract_from_weight(weights):
     return quantum_gates, ret_index
 
 
-def u_circ_gen(quantum_matrix, weights, flags, params):
+def u_circ_gen(quantum_matrix, weights, flags, params, batch_norm=True):
     """
     weights = [weight_1_1, weight_1_2, weight_2_1, weight_2_2]
     flags = [norm_flag_1, norm_flag_2]
@@ -250,89 +250,87 @@ def u_circ_gen(quantum_matrix, weights, flags, params):
     # print("Hidden layer created!")
 
     ### output layer ###
-    inter_q_1 = QuantumRegister(1, "inter_q_1_qbits")
-    norm_q_1 = QuantumRegister(1, "norm_q_1_qbits")
-    out_q_1 = QuantumRegister(1, "out_q_1_qbits")
-    opt_circ.add_register(inter_q_1, norm_q_1, out_q_1)
 
-    opt_circ.barrier()
+    if batch_norm:
+        inter_q_1 = QuantumRegister(1, "inter_q_1_qbits")
+        norm_q_1 = QuantumRegister(1, "norm_q_1_qbits")
+        out_q_1 = QuantumRegister(1, "out_q_1_qbits")
+        opt_circ.add_register(inter_q_1, norm_q_1, out_q_1)
 
-    if weight_2_1.sum() < 0:
-        weight_2_1 = weight_2_1*-1
-    idx = 0
-    for idx in range(weight_2_1.flatten().size()[0]):
-        if weight_2_1[idx] == -1:\
+        opt_circ.barrier()
 
-
-            opt_circ.x(hidden_neurons[idx])
-    opt_circ.h(inter_q_1)
-    opt_circ.cz(hidden_neurons[0], inter_q_1)
-    opt_circ.x(inter_q_1)
-    opt_circ.cz(hidden_neurons[1], inter_q_1)
-    opt_circ.x(inter_q_1)
-    opt_circ.h(inter_q_1)
-    opt_circ.x(inter_q_1)
-
-    opt_circ.barrier()
-
-    norm_init_rad = float(norm_para_1.sqrt().arcsin()*2)
-    opt_circ.ry(norm_init_rad, norm_q_1)
-    if norm_flag_1:
-        opt_circ.cx(inter_q_1, out_q_1)
+        if weight_2_1.sum() < 0:
+            weight_2_1 = weight_2_1*-1
+        idx = 0
+        for idx in range(weight_2_1.flatten().size()[0]):
+            if weight_2_1[idx] == -1:
+                opt_circ.x(hidden_neurons[idx])
+        opt_circ.h(inter_q_1)
+        opt_circ.cz(hidden_neurons[0], inter_q_1)
         opt_circ.x(inter_q_1)
-        opt_circ.ccx(inter_q_1, norm_q_1, out_q_1)
-    else:
-        opt_circ.ccx(inter_q_1, norm_q_1, out_q_1)
+        opt_circ.cz(hidden_neurons[1], inter_q_1)
+        opt_circ.x(inter_q_1)
+        opt_circ.h(inter_q_1)
+        opt_circ.x(inter_q_1)
 
-    for idx in range(weight_2_1.flatten().size()[0]):
-        if weight_2_1[idx] == -1:
-            opt_circ.x(hidden_neurons[idx])
+        opt_circ.barrier()
 
-    opt_circ.barrier()
+        norm_init_rad = float(norm_para_1.sqrt().arcsin()*2)
+        opt_circ.ry(norm_init_rad, norm_q_1)
+        if norm_flag_1:
+            opt_circ.cx(inter_q_1, out_q_1)
+            opt_circ.x(inter_q_1)
+            opt_circ.ccx(inter_q_1, norm_q_1, out_q_1)
+        else:
+            opt_circ.ccx(inter_q_1, norm_q_1, out_q_1)
 
-    inter_q_2 = QuantumRegister(1, "inter_q_2_qbits")
-    norm_q_2 = QuantumRegister(1, "norm_q_2_qbits")
-    out_q_2 = QuantumRegister(1, "out_q_2_qbits")
-    opt_circ.add_register(inter_q_2, norm_q_2, out_q_2)
+        for idx in range(weight_2_1.flatten().size()[0]):
+            if weight_2_1[idx] == -1:
+                opt_circ.x(hidden_neurons[idx])
 
-    opt_circ.barrier()
+        opt_circ.barrier()
 
-    if weight_2_2.sum() < 0:
-        weight_2_2 = weight_2_2*-1
-    idx = 0
-    for idx in range(weight_2_2.flatten().size()[0]):
-        if weight_2_2[idx] == -1:
-            opt_circ.x(hidden_neurons[idx])
-    opt_circ.h(inter_q_2)
-    opt_circ.cz(hidden_neurons[0], inter_q_2)
-    opt_circ.x(inter_q_2)
-    opt_circ.cz(hidden_neurons[1], inter_q_2)
-    opt_circ.x(inter_q_2)
-    opt_circ.h(inter_q_2)
-    opt_circ.x(inter_q_2)
+        inter_q_2 = QuantumRegister(1, "inter_q_2_qbits")
+        norm_q_2 = QuantumRegister(1, "norm_q_2_qbits")
+        out_q_2 = QuantumRegister(1, "out_q_2_qbits")
+        opt_circ.add_register(inter_q_2, norm_q_2, out_q_2)
 
-    opt_circ.barrier()
+        opt_circ.barrier()
 
-    norm_init_rad = float(norm_para_2.sqrt().arcsin()*2)
-    opt_circ.ry(norm_init_rad, norm_q_2)
-    if norm_flag_2:
-        opt_circ.cx(inter_q_2, out_q_2)
+        if weight_2_2.sum() < 0:
+            weight_2_2 = weight_2_2*-1
+        idx = 0
+        for idx in range(weight_2_2.flatten().size()[0]):
+            if weight_2_2[idx] == -1:
+                opt_circ.x(hidden_neurons[idx])
+        opt_circ.h(inter_q_2)
+        opt_circ.cz(hidden_neurons[0], inter_q_2)
         opt_circ.x(inter_q_2)
-        opt_circ.ccx(inter_q_2, norm_q_2, out_q_2)
-    else:
-        opt_circ.ccx(inter_q_2, norm_q_2, out_q_2)
+        opt_circ.cz(hidden_neurons[1], inter_q_2)
+        opt_circ.x(inter_q_2)
+        opt_circ.h(inter_q_2)
+        opt_circ.x(inter_q_2)
 
-    for idx in range(weight_2_2.flatten().size()[0]):
-        if weight_2_2[idx] == -1:
-            opt_circ.x(hidden_neurons[idx])
+        opt_circ.barrier()
 
-    opt_circ.barrier()
+        norm_init_rad = float(norm_para_2.sqrt().arcsin()*2)
+        opt_circ.ry(norm_init_rad, norm_q_2)
+        if norm_flag_2:
+            opt_circ.cx(inter_q_2, out_q_2)
+            opt_circ.x(inter_q_2)
+            opt_circ.ccx(inter_q_2, norm_q_2, out_q_2)
+        else:
+            opt_circ.ccx(inter_q_2, norm_q_2, out_q_2)
 
-    c_reg = ClassicalRegister(2, "reg")
-    opt_circ.add_register(c_reg)
-    opt_circ.measure(out_q_1, c_reg[0])
-    opt_circ.measure(out_q_2, c_reg[1])
+        for idx in range(weight_2_2.flatten().size()[0]):
+            if weight_2_2[idx] == -1:
+                opt_circ.x(hidden_neurons[idx])
 
-    # print("Output layer created!")
+        opt_circ.barrier()
 
+        c_reg = ClassicalRegister(2, "reg")
+        opt_circ.add_register(c_reg)
+        opt_circ.measure(out_q_1, c_reg[0])
+        opt_circ.measure(out_q_2, c_reg[1])
+        
     return opt_circ
